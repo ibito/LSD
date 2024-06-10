@@ -1,0 +1,8 @@
+appId: your.app.id
+productName: YourAppName
+directories:
+  output: dist
+files:
+  - "**/*"
+publish:
+  provider: github
