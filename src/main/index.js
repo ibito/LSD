@@ -62,7 +62,6 @@ app.whenReady().then(() => {
       return devices.map((device) => ({
         path: device.path,
         open: false,
-        buttonCount: device.NUM_KEYS,
         type: device.constructor.name
       }))
     } catch (error) {
@@ -100,6 +99,7 @@ app.whenReady().then(() => {
       device.on('down', (keyIndex) => {
         mainWindow?.webContents.send('stream-deck-key-down', { path: devicePath, keyIndex })
       })
+
       device.on('up', (keyIndex) => {
         mainWindow?.webContents.send('stream-deck-key-up', { path: devicePath, keyIndex })
       })
@@ -118,6 +118,7 @@ app.whenReady().then(() => {
           dialIndex: index,
           amount: amount
         })
+        console.log('a')
       })
 
       device.on('encoderUp', (index) => {
@@ -169,6 +170,13 @@ app.whenReady().then(() => {
       if (device) {
         device.removeAllListeners('down')
         device.removeAllListeners('up')
+        device.removeAllListeners('rotateLeft')
+        device.removeAllListeners('rotateRight')
+        device.removeAllListeners('encoderUp')
+        device.removeAllListeners('encoderDown')
+        device.removeAllListeners('lcdShortPress')
+        device.removeAllListeners('lcdLongPress')
+        device.removeAllListeners('lcdSwipe')
         device.close()
         delete openDevices[devicePath]
         return { success: true }
