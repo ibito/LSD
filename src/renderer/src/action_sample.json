@@ -1,0 +1,9 @@
+{
+    "0_button_0": {
+        "text": "Button 1",
+        "action": "run_command",
+        "parameters": {
+            "command": "spectacle -r"
+        }
+    }
+}

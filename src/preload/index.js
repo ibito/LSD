@@ -10,7 +10,10 @@ const streamDeck = {
   getConnectedStreamDecks: () => ipcRenderer.invoke('get-connected-stream-decks'),
   getStreamDeckSpecs: (devicePath) => ipcRenderer.invoke('get-stream-deck-specs', devicePath),
   onStreamDeckKeyDown: (callback) =>
-    ipcRenderer.on('stream-deck-key-down', (event, arg) => callback(event, arg)),
+    ipcRenderer.on('stream-deck-key-down', (event, arg) => {
+      console.log(arg)
+      callback(event, arg)
+    }),
   onStreamDeckKeyUp: (callback) =>
     ipcRenderer.on('stream-deck-key-up', (event, arg) => callback(event, arg)),
   onStreamDeckRotateLeft: (callback) =>

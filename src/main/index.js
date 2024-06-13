@@ -70,25 +70,6 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('get-stream-deck-specs', async (event, devicePath) => {
-    try {
-      const devices = await listStreamDecks()
-      const device = devices.find((d) => d.path === devicePath)
-      if (device) {
-        return {
-          path: device.path,
-          buttonCount: device.NUM_KEYS,
-          type: device.constructor.name
-        }
-      } else {
-        return { error: 'Device not found' }
-      }
-    } catch (error) {
-      console.error('Failed to get Stream Deck specs:', error)
-      return { error: error.message }
-    }
-  })
-
   ipcMain.handle('open-stream-deck', async (event, devicePath) => {
     try {
       const device = await openStreamDeck(devicePath)
@@ -96,11 +77,14 @@ app.whenReady().then(() => {
       console.log('Device type:', device.constructor.name) // Debugging log
 
       openDevices[devicePath] = device
-      device.on('down', (keyIndex) => {
+      device.on('down', (keyIndex, args) => {
+        console.log('Key down:', keyIndex, args) // Debugging log
         mainWindow?.webContents.send('stream-deck-key-down', { path: devicePath, keyIndex })
       })
 
       device.on('up', (keyIndex) => {
+        console.log('Key up:', keyIndex) // Debugging log
+        device.fillKeyColor(keyIndex, 0, 255, 0)
         mainWindow?.webContents.send('stream-deck-key-up', { path: devicePath, keyIndex })
       })
 
@@ -118,7 +102,6 @@ app.whenReady().then(() => {
           dialIndex: index,
           amount: amount
         })
-        console.log('a')
       })
 
       device.on('encoderUp', (index) => {
@@ -157,7 +140,15 @@ app.whenReady().then(() => {
         })
       })
 
-      return { success: true }
+      return {
+        model: device.device.deviceProperties.MODEL,
+        productName: device.device.deviceProperties.PRODUCT_NAME,
+        columns: device.device.deviceProperties.COLUMNS,
+        rows: device.device.deviceProperties.ROWS,
+        iconSize: device.device.deviceProperties.ICON_SIZE,
+        touchButtons: device.device.deviceProperties.TOUCH_BUTTONS,
+        keyDirection: device.device.deviceProperties.KEY_DIRECTION
+      }
     } catch (error) {
       console.error('Failed to open Stream Deck:', error)
       return { error: error.message }
@@ -187,6 +178,11 @@ app.whenReady().then(() => {
       console.error('Failed to close Stream Deck:', error)
       return { error: error.message }
     }
+  })
+
+  ipcMain.handle('stream-deck-key-down', (event, devicePath, args) => {
+    console.log('-------------------')
+    console.log(event, devicePath, args)
   })
 
   createWindow()

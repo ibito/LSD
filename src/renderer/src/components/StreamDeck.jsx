@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 
-const StreamDeck = () => {
-  const [buttonCount, setButtonCount] = useState(8) // Default to 8 buttons
+const StreamDeck = ({ device }) => {
+  const [buttonCount, setButtonCount] = useState(15) // Default to 8 buttons
 
   useEffect(() => {
     const detectStreamDeckVersion = () => {
-      const streamDeckVersion = 'StreamDeckXL'
-      switch (streamDeckVersion) {
+      switch (device.productName) {
         case 'StreamDeckMini':
           setButtonCount(6)
           break
@@ -16,7 +16,7 @@ const StreamDeck = () => {
         case 'StreamDeckXL':
           setButtonCount(32)
           break
-        case 'StreamDeck+':
+        case 'Streamdeck +':
           setButtonCount(8)
           break
         default:
@@ -26,7 +26,7 @@ const StreamDeck = () => {
     }
 
     detectStreamDeckVersion()
-  }, [])
+  }, [device.productName])
 
   return (
     <div className="container">
@@ -55,6 +55,10 @@ const StreamDeck = () => {
       </div>
     </div>
   )
+}
+
+StreamDeck.propTypes = {
+  device: PropTypes.object.isRequired
 }
 
 export default StreamDeck
